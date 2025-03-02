@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Campeonato de PES</title>
+    <link
+            href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+            rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="light-mode">
+<header>
+    <h1>Campeonato de PES</h1>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="mostrarSecao('secaoCampeonatos')">Campeonatos</a></li>
+            <li><a href="#" onclick="mostrarSecao('secaoTabela')">Tabela de Pontos</a></li>
+            <li><a href="#" onclick="mostrarSecao('secaoMataMata')">Mata-Mata</a></li>
+            <li><a href="#" onclick="mostrarSecao('secaoTimes')">Times</a></li>
+            <li><a href="#" onclick="mostrarSecao('secaoConfiguracoes')">Configurações</a></li>
+            <li><a href="#" onclick="toggleDarkMode()">Tema</a></li>
+        </ul>
+    </nav>
+</header>
+
+<main>
+    <!-- Seção de campeonatos -->
+    <section id="secaoCampeonatos">
+        <div id="criar-campeonato">
+            <h2>Criar Novo Campeonato</h2>
+            <input type="text" id="nomeCampeonato" placeholder="Nome do Campeonato" />
+            <div id="listaJogadores">
+                <h3>Jogadores Adicionados</h3>
+                <ul id="listaJogadoresUL"></ul>
+            </div>
+            <button onclick="abrirModalJogador()">Adicionar Jogador</button>
+            <button onclick="sortearTimes()">Sortear Times</button>
+            <button onclick="criarCampeonato()">Criar Campeonato</button>
+        </div>
+        <div id="lista-campeonatos">
+            <h2>Campeonatos</h2>
+            <ul id="campeonatos"></ul>
+        </div>
+    </section>
+
+    <!-- Seção de Tabela (fase de grupos) -->
+    <section id="secaoTabela" style="display: none;">
+        <h2 id="titulo-campeonato"></h2>
+        <button id="btnIniciarPartidas" class="fade-button" onclick="abrirModalResultado()">Registrar Placar</button>
+
+        <h3>Tabela de Pontos</h3>
+        <table id="tabela-jogadores">
+            <thead>
+            <tr>
+                <th>Jogador</th>
+                <th class="colPontos">Pts</th>
+                <th>GM</th>
+                <th>GS</th>
+                <th>Vit</th>
+                <th>Emp</th>
+                <th>Der</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+
+        <h3>Partidas</h3>
+        <table id="tabela-partidas">
+            <thead>
+            <tr>
+                <th>Jogador 1</th>
+                <th>Placar</th>
+                <th>Jogador 2</th>
+                <th>Ação</th>
+            </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="btnGerarMataMata" style="display: none;" onclick="gerarMataMata()">Gerar Mata-Mata</button>
+    </section>
+
+    <!-- Seção do mata-mata -->
+    <section id="secaoMataMata" style="display: none;">
+        <h2 id="tituloMataMata"></h2>
+        <div id="containerMataMata"></div>
+        <button id="btnRegistrarMataMata" class="fade-button" onclick="abrirModalResultado()">Registrar Placar</button>
+    </section>
+
+    <!-- Seção de times -->
+    <section id="secaoTimes" style="display: none;">
+        <h2>Cadastro de Times</h2>
+        <!-- Agora vamos enviar um form com multipart/form-data para subir a imagem -->
+        <form id="formCadastrarTime" enctype="multipart/form-data" onsubmit="event.preventDefault(); cadastrarTime();">
+            <input type="text" id="nomeTime" placeholder="Nome do Time" />
+            <input type="file" id="arquivoTime" accept="image/*" />
+            <button type="submit">Cadastrar Time</button>
+        </form>
+
+        <h3>Times Cadastrados</h3>
+        <ul id="listaTimes"></ul>
+    </section>
+
+    <!-- Seção de Configurações -->
+    <section id="secaoConfiguracoes" style="display: none;">
+        <h2>Configurações do Campeonato</h2>
+        <p>Selecione um campeonato para editar:</p>
+        <select id="selectCampeonatoEdicao" onchange="carregarDadosParaEdicao()">
+            <option value="">-- Selecione --</option>
+        </select>
+
+        <div id="configuracaoDetalhes" style="display: none; margin-top: 20px;">
+            <h3>Edição Geral</h3>
+            <input type="text" id="editarNomeCampeonato" placeholder="Novo nome do Campeonato" />
+
+            <h3>Editar Jogadores</h3>
+            <ul id="listaJogadoresEdicao"></ul>
+
+            <button onclick="salvarEdicoesCampeonato()">Salvar Alterações</button>
+        </div>
+    </section>
+</main>
+
+<!-- Modal de registrar resultado -->
+<div id="modalResultado" class="modal">
+    <div class="modal-content fade-in">
+        <span class="close" onclick="fecharModal()">&times;</span>
+        <h3>Registrar Resultado</h3>
+        <label for="partidaSelecionada">Partida:</label>
+        <select id="partidaSelecionada" onchange="onChangePartida()"></select>
+        <div id="placares">
+            <div>
+                <label id="labelJogador1"></label>
+                <input type="number" id="placar1" min="0" value="0" />
+            </div>
+            <div>
+                <label id="labelJogador2"></label>
+                <input type="number" id="placar2" min="0" value="0" />
+            </div>
+        </div>
+        <button onclick="registrarResultado()">Registrar</button>
+    </div>
+</div>
+
+<!-- Modal de cadastrar jogador -->
+<div id="modalJogador" class="modal">
+    <div class="modal-content fade-in">
+        <span class="close" onclick="fecharModalJogador()">&times;</span>
+        <h3>Cadastrar Jogador</h3>
+        <input type="text" id="nomeJogador" placeholder="Nome do Jogador" />
+        <!-- Observação: aqui podemos ou não colocar time, pois agora cada jogador é “livre” ou
+             atrelado. Caso deseje amarrar o jogador a um time, podemos buscar os times e exibir em um <select>.
+             Exemplo deixado de fora para simplificar. -->
+        <button onclick="adicionarJogador()">Adicionar</button>
+    </div>
+</div>
+
+<script src="js/main.js"></script>
+</body>
+</html>
